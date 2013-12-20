@@ -15,6 +15,7 @@
 @property (nonatomic, assign) CGSize arrowSize;
 @property (nonatomic, assign) CGFloat interMargin;
 @property (nonatomic, assign) CGFloat arrowBottomMargin;
+@property (nonatomic, assign) CGFloat menuHomeY;
 @end
 
 @implementation PTPullToMenuTVC
@@ -55,6 +56,8 @@
     frm.origin.y = -1.0 * _arrowBottomMargin - _arrowSize.height - _interMargin - CGRectGetHeight(frm);
     _menu.frame = frm;
     [self.tableView addSubview:_menu];
+    
+    _menuHomeY = CGRectGetMinY(_menu.frame);
 }
 
 //===============================================
@@ -88,7 +91,18 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     
-    NSLog(@"did scroll");
+    CGFloat trueOffset = scrollView.contentOffset.y + scrollView.contentInset.top;
+    
+    NSLog(@"did scroll: %f", trueOffset);
+    
+    CGRect frm = self.menu.frame;
+    if (trueOffset < _menuHomeY) {
+        frm.origin.y = trueOffset;
+    }
+    else {
+        frm.origin.y = _menuHomeY;
+    }
+    self.menu.frame = frm;
 }
 
 //===============================================
