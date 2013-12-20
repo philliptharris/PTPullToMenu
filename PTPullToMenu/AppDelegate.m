@@ -8,13 +8,19 @@
 
 #import "AppDelegate.h"
 
+#import "PTPullToMenuTVC.h"
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
+    
+    PTPullToMenuTVC *tvc = [[PTPullToMenuTVC alloc] initWithStyle:UITableViewStyleGrouped];
+    UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:tvc];
+    self.window.rootViewController = nc;
+    
     [self.window makeKeyAndVisible];
     return YES;
 }

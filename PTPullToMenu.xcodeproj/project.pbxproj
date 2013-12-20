@@ -19,6 +19,7 @@
 		3A72883D1863F96D00B6715E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A7288251863F96D00B6715E /* UIKit.framework */; };
 		3A7288451863F96D00B6715E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3A7288431863F96D00B6715E /* InfoPlist.strings */; };
 		3A7288471863F96D00B6715E /* PTPullToMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7288461863F96D00B6715E /* PTPullToMenuTests.m */; };
+		3A7288521863F9C900B6715E /* PTPullToMenuTVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A7288511863F9C900B6715E /* PTPullToMenuTVC.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,8 @@
 		3A7288421863F96D00B6715E /* PTPullToMenuTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PTPullToMenuTests-Info.plist"; sourceTree = "<group>"; };
 		3A7288441863F96D00B6715E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3A7288461863F96D00B6715E /* PTPullToMenuTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTPullToMenuTests.m; sourceTree = "<group>"; };
+		3A7288501863F9C900B6715E /* PTPullToMenuTVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTPullToMenuTVC.h; sourceTree = "<group>"; };
+		3A7288511863F9C900B6715E /* PTPullToMenuTVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTPullToMenuTVC.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +114,8 @@
 				3A7288311863F96D00B6715E /* AppDelegate.m */,
 				3A7288331863F96D00B6715E /* Images.xcassets */,
 				3A7288281863F96D00B6715E /* Supporting Files */,
+				3A7288501863F9C900B6715E /* PTPullToMenuTVC.h */,
+				3A7288511863F9C900B6715E /* PTPullToMenuTVC.m */,
 			);
 			path = PTPullToMenu;
 			sourceTree = "<group>";
@@ -239,6 +244,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A7288521863F9C900B6715E /* PTPullToMenuTVC.m in Sources */,
 				3A7288321863F96D00B6715E /* AppDelegate.m in Sources */,
 				3A72882E1863F96D00B6715E /* main.m in Sources */,
 			);
