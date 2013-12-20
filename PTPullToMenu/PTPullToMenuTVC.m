@@ -16,6 +16,8 @@
 @property (nonatomic, assign) CGFloat interMargin;
 @property (nonatomic, assign) CGFloat arrowBottomMargin;
 @property (nonatomic, assign) CGFloat menuHomeY;
+@property (nonatomic, assign) CGFloat arrowHomeY;
+@property (nonatomic, assign) CGFloat flipPoint;
 @end
 
 @implementation PTPullToMenuTVC
@@ -35,11 +37,14 @@
     
     [self.tableView.panGestureRecognizer addTarget:self action:@selector(tableDidPan:)];
     
-    _arrowSize = CGSizeMake(10.0, 10.0);
+    _arrowSize = CGSizeMake(20.0, 29.0);
     _arrowBottomMargin = 10.0;
+    _flipPoint = 60.0;
     
     _arrow = [[UIView alloc] initWithFrame:CGRectMake(0.0, -1.0 * (_arrowSize.height + _arrowBottomMargin), _arrowSize.width, _arrowSize.height)];
-    _arrow.backgroundColor = [UIColor blackColor];
+    _arrow.backgroundColor = [UIColor clearColor];
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow"]];
+    [_arrow addSubview:imgView];
     [self.tableView addSubview:_arrow];
     
     _sideMargin = -5.0;
@@ -58,6 +63,7 @@
     [self.tableView addSubview:_menu];
     
     _menuHomeY = CGRectGetMinY(_menu.frame);
+    _arrowHomeY = CGRectGetMinY(_arrow.frame);
 }
 
 //===============================================
@@ -103,6 +109,15 @@
         frm.origin.y = _menuHomeY;
     }
     self.menu.frame = frm;
+    
+    frm = self.arrow.frame;
+    if (trueOffset < _arrowHomeY) {
+        frm.origin.y = trueOffset + CGRectGetHeight(self.menu.frame) + _interMargin;
+    }
+    else {
+        frm.origin.y = _arrowHomeY;
+    }
+    self.arrow.frame = frm;
 }
 
 //===============================================
