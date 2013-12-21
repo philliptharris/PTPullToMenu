@@ -18,6 +18,10 @@
 @property (nonatomic, assign) CGFloat menuHomeY;
 @property (nonatomic, assign) CGFloat arrowHomeY;
 @property (nonatomic, assign) CGFloat flipPoint;
+@property (nonatomic, assign) BOOL menuGetsStuck;
+@property (nonatomic, assign) BOOL arrowGetsStuck;
+@property (nonatomic, assign) BOOL arrowHasFlipped;
+@property (nonatomic, assign) BOOL arrowHasCompletedFlipAnimation;
 @end
 
 @implementation PTPullToMenuTVC
@@ -37,18 +41,23 @@
     
     [self.tableView.panGestureRecognizer addTarget:self action:@selector(tableDidPan:)];
     
-    _arrowSize = CGSizeMake(20.0, 29.0);
-    _arrowBottomMargin = 10.0;
-    _flipPoint = -60.0;
+    _menuGetsStuck = YES;
+    _arrowGetsStuck = YES;
+    _arrowHasFlipped = NO;
+    _arrowHasCompletedFlipAnimation = NO;
+    
+    _arrowSize = CGSizeMake(13.0, 39.0/2.0);
+    _arrowBottomMargin = 4.0;
+    _flipPoint = -63.0;
     
     _arrow = [[UIView alloc] initWithFrame:CGRectMake(0.0, -1.0 * (_arrowSize.height + _arrowBottomMargin), _arrowSize.width, _arrowSize.height)];
-    _arrow.backgroundColor = [UIColor clearColor];
-    UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow"]];
+//    _arrow.backgroundColor = [UIColor lightGrayColor];
+    UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"twitterArrow"]];
     [_arrow addSubview:imgView];
     [self.tableView addSubview:_arrow];
     
     _sideMargin = -5.0;
-    _interMargin = 10.0;
+    _interMargin = 0.0;
     
     _menu = [[UISegmentedControl alloc] initWithItems:@[@"Share", @"Rename", @"Add Item"]];
     CGFloat availableWidth = CGRectGetWidth(self.tableView.frame) - _sideMargin * 2.0;
@@ -61,6 +70,8 @@
     frm.origin.y = -1.0 * _arrowBottomMargin - _arrowSize.height - _interMargin - CGRectGetHeight(frm);
     _menu.frame = frm;
     [self.tableView addSubview:_menu];
+    
+    _menu.tintColor = [UIColor colorWithRed:61.0/255 green:70.0/255 blue:77.0/255 alpha:1.0];
     
     _menuHomeY = CGRectGetMinY(_menu.frame);
     _arrowHomeY = CGRectGetMinY(_arrow.frame);
@@ -101,32 +112,63 @@
     
     NSLog(@"did scroll: %f", trueOffset);
     
-    CGRect frm = self.menu.frame;
-    if (trueOffset < _menuHomeY) {
-        frm.origin.y = trueOffset;
+    if (_menuGetsStuck) {
+        
+        CGRect frm = self.menu.frame;
+        if (trueOffset < _menuHomeY) {
+            frm.origin.y = trueOffset;
+        }
+        else {
+            frm.origin.y = _menuHomeY;
+        }
+        self.menu.frame = frm;
+        
+        if (_arrowGetsStuck) {
+            
+            frm = self.arrow.frame;
+            if (trueOffset < _menuHomeY) {
+                frm.origin.y = trueOffset + CGRectGetHeight(self.menu.frame) + _interMargin;
+            }
+            else {
+                frm.origin.y = _arrowHomeY;
+            }
+            self.arrow.frame = frm;
+        }
     }
-    else {
-        frm.origin.y = _menuHomeY;
-    }
-    self.menu.frame = frm;
-    
-    frm = self.arrow.frame;
-    if (trueOffset < _arrowHomeY) {
-        frm.origin.y = trueOffset + CGRectGetHeight(self.menu.frame) + _interMargin;
-    }
-    else {
-        frm.origin.y = _arrowHomeY;
-    }
-    self.arrow.frame = frm;
     
     if (trueOffset < _flipPoint) {
-        CGAffineTransform transform = CGAffineTransformIdentity;
-        self.arrow.transform = transform;
+        if (!_arrowHasFlipped) {
+            _arrowHasCompletedFlipAnimation = NO;
+            _arrowHasFlipped = YES;
+            [UIView animateWithDuration:0.2 delay:0.0 options:(UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                CGAffineTransform transform = CGAffineTransformMakeRotation(M_PI);
+                self.arrow.transform = transform;
+            } completion:^(BOOL finished) {
+                _arrowHasCompletedFlipAnimation = YES;
+                [self setMenuSelectionPerArrowPosition];
+            }];
+        }
     }
     else {
-        CGAffineTransform transform = CGAffineTransformMakeRotation(M_PI);
-        self.arrow.transform = transform;
+        if (_arrowHasFlipped) {
+            _arrowHasCompletedFlipAnimation = NO;
+            [self setMenuSelectionPerArrowPosition];
+            _arrowHasFlipped = NO;
+            [UIView animateWithDuration:0.2 delay:0.0 options:(UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionBeginFromCurrentState) animations:^{
+                CGAffineTransform transform = CGAffineTransformIdentity;
+                self.arrow.transform = transform;
+            } completion:^(BOOL finished) {
+            }];
+        }
     }
+    
+    // This is visually jarring
+//    self.menu.hidden = (trueOffset >= _flipPoint);
+}
+
+- (BOOL)hasReachedFlipPoint {
+    CGFloat trueOffset = self.tableView.contentOffset.y + self.tableView.contentInset.top;
+    return (trueOffset < _flipPoint);
 }
 
 //===============================================
@@ -138,20 +180,33 @@
     
     NSLog(@"did pan");
     
-    CGPoint translation = [gestureRecognizer translationInView:self.tableView];
+//    CGPoint translation = [gestureRecognizer translationInView:self.tableView];
     CGPoint touchPoint = [gestureRecognizer locationInView:self.tableView];
     
-    CGRect frm = self.arrow.frame;
-    CGFloat originX = touchPoint.x - CGRectGetWidth(frm) / 2.0;
+    CGRect arrowFrm = self.arrow.frame;
+    CGFloat originX = touchPoint.x - CGRectGetWidth(arrowFrm) / 2.0;
     originX = MAX(_sideMargin, originX);
-    originX = MIN(CGRectGetMaxX(self.menu.frame) - CGRectGetWidth(frm), originX);
-    frm.origin.x = originX;
-    self.arrow.frame = frm;
+    originX = MIN(CGRectGetMaxX(self.menu.frame) - CGRectGetWidth(arrowFrm), originX);
+    arrowFrm.origin.x = originX;
+    self.arrow.frame = arrowFrm;
     
-    CGFloat xPoint = CGRectGetMidX(frm) - _sideMargin;
+    [self setMenuSelectionPerArrowPosition];
+}
+
+- (void)setMenuSelectionPerArrowPosition {
+    
+    CGRect arrowFrm = self.arrow.frame;
+    
+    CGFloat xPoint = CGRectGetMidX(arrowFrm) - _sideMargin;
     CGFloat segmentWidth = [self.menu widthForSegmentAtIndex:0];
     NSInteger index = floorf(xPoint / segmentWidth);
-    [self.menu setSelectedSegmentIndex:index];
+    
+    if ([self hasReachedFlipPoint] && _arrowHasCompletedFlipAnimation && self.tableView.dragging && self.tableView.tracking) {
+        [self.menu setSelectedSegmentIndex:index];
+    }
+    else {
+        [self.menu setSelectedSegmentIndex:-1];
+    }
 }
 
 @end
