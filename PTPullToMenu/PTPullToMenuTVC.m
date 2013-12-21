@@ -39,7 +39,7 @@
     
     _arrowSize = CGSizeMake(20.0, 29.0);
     _arrowBottomMargin = 10.0;
-    _flipPoint = 60.0;
+    _flipPoint = -60.0;
     
     _arrow = [[UIView alloc] initWithFrame:CGRectMake(0.0, -1.0 * (_arrowSize.height + _arrowBottomMargin), _arrowSize.width, _arrowSize.height)];
     _arrow.backgroundColor = [UIColor clearColor];
@@ -118,6 +118,15 @@
         frm.origin.y = _arrowHomeY;
     }
     self.arrow.frame = frm;
+    
+    if (trueOffset < _flipPoint) {
+        CGAffineTransform transform = CGAffineTransformIdentity;
+        self.arrow.transform = transform;
+    }
+    else {
+        CGAffineTransform transform = CGAffineTransformMakeRotation(M_PI);
+        self.arrow.transform = transform;
+    }
 }
 
 //===============================================
