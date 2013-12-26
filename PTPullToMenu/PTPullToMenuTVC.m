@@ -48,7 +48,7 @@
     
     _arrowSize = CGSizeMake(13.0, 39.0/2.0);
     _arrowBottomMargin = 4.0;
-    _flipPoint = -63.0;
+    _flipPoint = -54.0;
     
     _arrow = [[UIView alloc] initWithFrame:CGRectMake(0.0, -1.0 * (_arrowSize.height + _arrowBottomMargin), _arrowSize.width, _arrowSize.height)];
 //    _arrow.backgroundColor = [UIColor lightGrayColor];
@@ -136,11 +136,17 @@
         }
     }
     
+    CGFloat fullDuration = 5.0;
+    CGFloat radians = atan2(self.arrow.transform.b, self.arrow.transform.a);
+    NSLog(@"%f", radians);
+    
     if (trueOffset < _flipPoint) {
+        
         if (!_arrowHasFlipped) {
             _arrowHasCompletedFlipAnimation = NO;
             _arrowHasFlipped = YES;
-            [UIView animateWithDuration:0.2 delay:0.0 options:(UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionBeginFromCurrentState) animations:^{
+            
+            [UIView animateWithDuration:fullDuration delay:0.0 options:(UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionBeginFromCurrentState) animations:^{
                 CGAffineTransform transform = CGAffineTransformMakeRotation(M_PI);
                 self.arrow.transform = transform;
             } completion:^(BOOL finished) {
@@ -150,11 +156,12 @@
         }
     }
     else {
+        
         if (_arrowHasFlipped) {
             _arrowHasCompletedFlipAnimation = NO;
             [self setMenuSelectionPerArrowPosition];
             _arrowHasFlipped = NO;
-            [UIView animateWithDuration:0.2 delay:0.0 options:(UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionBeginFromCurrentState) animations:^{
+            [UIView animateWithDuration:fullDuration delay:0.0 options:(UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionBeginFromCurrentState) animations:^{
                 CGAffineTransform transform = CGAffineTransformIdentity;
                 self.arrow.transform = transform;
             } completion:^(BOOL finished) {
