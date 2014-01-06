@@ -40,6 +40,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+//    self.tableView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
+    
     [self.tableView.panGestureRecognizer addTarget:self action:@selector(tableDidPan:)];
     
     _menuGetsStuck = YES;
@@ -55,6 +57,7 @@
     
     _seg = [[UISegmentedControl alloc] initWithItems:@[@"Share", @"Rename", @"Add Item"]];
     _seg.tintColor = [UIColor colorWithRed:61.0/255 green:70.0/255 blue:77.0/255 alpha:1.0];
+    _seg.tintColor = [UIColor colorWithRed:0.0/255 green:126.0/255 blue:229.0/255 alpha:1.0];
     CGFloat availableWidth = CGRectGetWidth(self.tableView.frame) - _sideMargin * 2.0;
     CGFloat segmentWidth = availableWidth / _seg.numberOfSegments;
     for (int i = 0; i < _seg.numberOfSegments; i++) {
@@ -66,7 +69,7 @@
     
     _menu = [[UIView alloc] initWithFrame:CGRectMake(0.0, -1.0 * menuHeight, CGRectGetWidth(self.tableView.frame), menuHeight)];
     [self.tableView addSubview:_menu];
-    _menu.backgroundColor = [UIColor lightGrayColor];
+    _menu.backgroundColor = [UIColor clearColor];
     
     CGFloat baseY = menuHeight;
     
@@ -143,7 +146,7 @@
 //        }
     }
     
-    CGFloat fullDuration = 0.3;
+    CGFloat fullDuration = 0.2;
 //    CGFloat radians = atan2(self.arrow.transform.b, self.arrow.transform.a);
 //    NSLog(@"%f", radians);
     
@@ -186,9 +189,17 @@
             [self setMenuSelectionPerArrowPosition];
             _arrowHasFlipped = NO;
             
+            CGRect frm = self.seg.frame;
+            frm.origin.y = -1.0 * CGRectGetHeight(frm);
+            
             [UIView animateWithDuration:fullDuration delay:0.0 options:(UIViewAnimationOptionCurveEaseIn | UIViewAnimationOptionBeginFromCurrentState) animations:^{
                 CGAffineTransform transform = CGAffineTransformIdentity;
                 self.arrow.transform = transform;
+            } completion:^(BOOL finished) {
+            }];
+            
+            [UIView animateWithDuration:fullDuration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                self.seg.frame = frm;
             } completion:^(BOOL finished) {
                 self.seg.hidden = YES;
             }];
