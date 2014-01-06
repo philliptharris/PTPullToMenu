@@ -126,7 +126,7 @@
         
         CGRect frm = self.menu.frame;
         if (trueOffset < _menuHomeY) {
-            frm.origin.y = trueOffset;
+            frm.origin.y = trueOffset + (_menuHomeY - trueOffset) / 3.0;
         }
         else {
             frm.origin.y = _menuHomeY;
